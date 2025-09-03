@@ -33,18 +33,6 @@ jobs:
           pip install "conan>=2.0,<3.0"
           conan --version
       
-      # Настройка профиля Conan
-      - name: Setup Conan profile
-        run: |
-          conan profile detect --force
-          conan profile show -pr default
-          echo "=== Custom profile ==="
-          cat conanProfiles/linuxRelease
-      
-      - name: Install dependencies with Conan
-        run: |
-          conan install . --profile=conanProfiles/linuxRelease --build=missing
-      
       - name: Configure CMake
         run: |
           cmake . -DPATCH_VERSION=${{ github.run_number }} -DWITH_BOOST_TEST=ON -DCMAKE_BUILD_TYPE=Release
