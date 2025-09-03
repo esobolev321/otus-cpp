@@ -13,11 +13,43 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - run: sudo apt-get update && sudo apt-get install libboost-test-dev -y
-      - run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DWITH_BOOST_TEST=ON
-      - run: cmake --build .
-      - run: cmake --build . --target test
-      - run: cmake --build . --target package
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake gcc g++
+      
+      - name: Install Conan
+        run: |
+          pip install conan
+          conan --version
+      
+      - name: Setup Conan profile
+        run: |
+          conan profile detect --force
+          conan profile show default
+      
+      - name: Install dependencies with Conan
+        run: |
+          conan install . --profile=conanProfiles/linuxDebug --build=missing
+      
+      - name: Configure CMake
+        run: |
+          cmake . -DPATCH_VERSION=${{ github.run_number }} -DWITH_BOOST_TEST=ON
+      
+      - name: Build project
+        run: cmake --build .
+      
+      - name: Run tests
+        run: cmake --build . --target test
+      
+      - name: Create package
+        run: cmake --build . --target package
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
