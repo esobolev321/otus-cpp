@@ -22,29 +22,48 @@ include(${CMAKE_SOURCE_DIR}/Automation/CMAKE/CMakeHelpers.cmake)
 setup_conan(${CONAN_PROFILE} ${CONAN_PROFILE})
 
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
-set(PROJECT_VESRION 0.0.${PATCH_VERSION})
+set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 
-project(helloworld VERSION ${PROJECT_VESRION})
+set(PROJECT_NAME "helloworld")
+
+project(${PROJECT_NAME} VERSION ${PROJECT_VERSION})
+
+file(WRITE "${CMAKE_BINARY_DIR}/project_info.env" 
+     "PROJECT_NAME=${CMAKE_PROJECT_NAME}\n"
+     "PROJECT_VERSION=${CMAKE_PROJECT_VERSION}\n"
+     "PROJECT_VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}\n"
+     "PROJECT_VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR}\n"
+     "PROJECT_VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH}\n")
 
 option(WITH_BOOST_TEST "Whether to build Boost test" ON)
 option(WITH_GTEST "Whether to build Google test" ON)
 
 configure_file(version.h.in version.h)
 
-add_executable(helloworld_cli main.cpp)
-add_library(helloworld lib.cpp)
+file(GLOB_RECURSE LIB_SOURCES "Source/*.cpp")
+file(GLOB_RECURSE LIB_HEADERS "Source/*.h")
 
-set_target_properties(helloworld_cli helloworld PROPERTIES
+add_executable(${PROJECT_NAME}_cli main.cpp)
+add_library(${PROJECT_NAME} ${LIB_SOURCES} ${LIB_HEADERS})
+
+set_target_properties(${PROJECT_NAME}_cli ${PROJECT_NAME} PROPERTIES
     CXX_STANDARD 14
     CXX_STANDARD_REQUIRED ON
 )
 
-target_include_directories(helloworld
+target_include_directories(${PROJECT_NAME}
     PRIVATE "${CMAKE_BINARY_DIR}"
+    PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Source"
 )
 
-target_link_libraries(helloworld_cli PRIVATE
-    helloworld
+# Добавляем include директории для main executable
+target_include_directories(${PROJECT_NAME}_cli
+    PRIVATE "${CMAKE_BINARY_DIR}"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source"
+)
+
+target_link_libraries(${PROJECT_NAME}_cli PRIVATE
+    ${PROJECT_NAME}
 )
 
 if(WITH_BOOST_TEST)
@@ -57,7 +76,12 @@ if(WITH_BOOST_TEST)
         CXX_STANDARD_REQUIRED ON
     )
 
-    target_link_libraries(test_version Boost::unit_test_framework helloworld)
+    target_include_directories(test_version
+        PRIVATE "${CMAKE_BINARY_DIR}"
+        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source"
+    )
+
+    target_link_libraries(test_version Boost::unit_test_framework ${PROJECT_NAME})
 endif()
 
 if(WITH_GTEST)
@@ -70,14 +94,19 @@ if(WITH_GTEST)
         CXX_STANDARD_REQUIRED ON
     )
 
-    target_link_libraries(test_gtest GTest::gtest GTest::gtest_main helloworld)
+    target_include_directories(test_gtest
+        PRIVATE "${CMAKE_BINARY_DIR}"
+        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source"
+    )
+
+    target_link_libraries(test_gtest GTest::gtest GTest::gtest_main ${PROJECT_NAME})
 endif()
 
 if (MSVC)
-    target_compile_options(helloworld_cli PRIVATE
+    target_compile_options(${PROJECT_NAME}_cli PRIVATE
         /W4
     )
-    target_compile_options(helloworld PRIVATE
+    target_compile_options(${PROJECT_NAME} PRIVATE
         /W4
     )
     if(WITH_BOOST_TEST)
@@ -91,10 +120,10 @@ if (MSVC)
         )
     endif()
 else ()
-    target_compile_options(helloworld_cli PRIVATE
+    target_compile_options(${PROJECT_NAME}_cli PRIVATE
         -Wall -Wextra -pedantic -Werror
     )
-    target_compile_options(helloworld PRIVATE
+    target_compile_options(${PROJECT_NAME} PRIVATE
         -Wall -Wextra -pedantic -Werror
     )
     if(WITH_BOOST_TEST)
@@ -109,7 +138,7 @@ else ()
     endif()
 endif()
 
-install(TARGETS helloworld_cli RUNTIME DESTINATION bin)
+install(TARGETS ${PROJECT_NAME}_cli RUNTIME DESTINATION bin)
 
 set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")

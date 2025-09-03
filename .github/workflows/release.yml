@@ -37,6 +37,12 @@ jobs:
         run: |
           cmake . -DPATCH_VERSION=${{ github.run_number }} -DWITH_BOOST_TEST=ON -DWITH_GTEST=ON -DCMAKE_BUILD_TYPE=Release
       
+      - name: Get project info from CMake
+        run: |
+          cat project_info.env >> $GITHUB_ENV
+          echo "Project info loaded:"
+          cat project_info.env
+      
       - name: Build project
         run: cmake --build .
       
@@ -69,6 +75,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./helloworld-0.0.${{ github.run_number }}-Linux.deb
-          asset_name: helloworld-0.0.${{ github.run_number }}-Linux.deb
+          asset_path: ./${{ env.PROJECT_NAME }}-${{ env.PROJECT_VERSION_MAJOR }}.${{ env.PROJECT_VERSION_MINOR }}.${{ github.run_number }}-Linux.deb
+          asset_name: ${{ env.PROJECT_NAME }}-${{ env.PROJECT_VERSION_MAJOR }}.${{ env.PROJECT_VERSION_MINOR }}.${{ github.run_number }}-Linux.deb
           asset_content_type: application/vnd.debian.binary-package
