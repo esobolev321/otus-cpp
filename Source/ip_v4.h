@@ -16,7 +16,7 @@ public:
 
     bool operator<(const IPAddressV4& other) const;
 
-    bool isInSubnet(const IPAddressV4& network, const IPAddressV4& mask) const;;
+    bool isInSubnet(const IPAddressV4& network, const IPAddressV4& mask) const;
 
 private:
     std::array<uint8_t, 4> octets;
