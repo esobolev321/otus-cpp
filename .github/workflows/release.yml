@@ -47,7 +47,7 @@ jobs:
       
       - name: Configure CMake
         run: |
-          cmake . -DPATCH_VERSION=${{ github.run_number }} -DWITH_BOOST_TEST=ON
+          cmake . -DPATCH_VERSION=${{ github.run_number }} -DWITH_BOOST_TEST=ON -DCMAKE_BUILD_TYPE=Release
       
       - name: Build project
         run: cmake --build .
