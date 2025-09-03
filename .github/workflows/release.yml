@@ -41,7 +41,14 @@ jobs:
         run: cmake --build .
       
       - name: Run tests
-        run: cmake --build . --target test
+        run: |
+          ctest --output-on-failure --verbose --output-junit test-results.xml
+      
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: test-results.xml
       
       - name: Create package
         run: cmake --build . --target package
