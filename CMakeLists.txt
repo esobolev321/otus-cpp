@@ -24,7 +24,7 @@ setup_conan(${CONAN_PROFILE} ${CONAN_PROFILE})
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 
-set(PROJECT_NAME "helloworld")
+set(PROJECT_NAME "ip_filter")
 
 project(${PROJECT_NAME} VERSION ${PROJECT_VERSION})
 
