@@ -27,6 +27,7 @@ set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 project(helloworld VERSION ${PROJECT_VESRION})
 
 option(WITH_BOOST_TEST "Whether to build Boost test" ON)
+option(WITH_GTEST "Whether to build Google test" ON)
 
 configure_file(version.h.in version.h)
 
@@ -56,8 +57,20 @@ if(WITH_BOOST_TEST)
         CXX_STANDARD_REQUIRED ON
     )
 
-
     target_link_libraries(test_version Boost::unit_test_framework helloworld)
+endif()
+
+if(WITH_GTEST)
+    find_package(GTest REQUIRED)
+    
+    add_executable(test_gtest test_gtest.cpp)
+
+    set_target_properties(test_gtest PROPERTIES
+        CXX_STANDARD 14
+        CXX_STANDARD_REQUIRED ON
+    )
+
+    target_link_libraries(test_gtest GTest::gtest GTest::gtest_main helloworld)
 endif()
 
 if (MSVC)
@@ -69,6 +82,11 @@ if (MSVC)
     )
     if(WITH_BOOST_TEST)
         target_compile_options(test_version PRIVATE
+            /W4
+        )
+    endif()
+    if(WITH_GTEST)
+        target_compile_options(test_gtest PRIVATE
             /W4
         )
     endif()
@@ -84,6 +102,11 @@ else ()
             -Wall -Wextra -pedantic -Werror
         )
     endif()
+    if(WITH_GTEST)
+        target_compile_options(test_gtest PRIVATE
+            -Wall -Wextra -pedantic -Werror
+        )
+    endif()
 endif()
 
 install(TARGETS helloworld_cli RUNTIME DESTINATION bin)
@@ -95,7 +118,14 @@ set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
 set(CPACK_PACKAGE_CONTACT example@example.com)
 include(CPack)
 
-if(WITH_BOOST_TEST)
+if(WITH_BOOST_TEST OR WITH_GTEST)
     enable_testing()
+endif()
+
+if(WITH_BOOST_TEST)
     add_test(test_version test_version)
+endif()
+
+if(WITH_GTEST)
+    add_test(test_gtest test_gtest)
 endif()
