@@ -45,6 +45,10 @@ bool IPAddressV4::operator<(const IPAddressV4& other) const {
     return false;
 }
 
+bool IPAddressV4::operator>(const IPAddressV4& other) const {
+    return other < *this;
+}
+
 bool IPAddressV4::isInSubnet(const IPAddressV4& network, const IPAddressV4& mask) const {
     for (size_t i = 0; i < 4; ++i) {
         if ((octets[i] & mask.octets[i]) != (network.octets[i] & mask.octets[i])) {

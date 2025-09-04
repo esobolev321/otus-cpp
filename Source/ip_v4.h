@@ -15,6 +15,8 @@ public:
     std::string toString() const;
 
     bool operator<(const IPAddressV4& other) const;
+    
+    bool operator>(const IPAddressV4& other) const;
 
     bool isInSubnet(const IPAddressV4& network, const IPAddressV4& mask) const;
 

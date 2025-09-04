@@ -2,14 +2,29 @@
 
 #include <iostream>
 #include <set>
+#include <string>
+#include <sstream>
 
 int main(int, char **)
 {
-	std::set<ip_filter::IPAddressV4> ipSet;
+	std::set<ip_filter::IPAddressV4, std::greater<ip_filter::IPAddressV4>> ipSet;
 
-	ip_filter::IPAddressV4 ip;
-	while (std::cin >> ip) {
-		ipSet.insert(ip);
+	auto parseIPFromTSV = [](const std::string& line) -> std::string {
+		auto tabPos = line.find('\t');
+		return tabPos != std::string::npos ? line.substr(0, tabPos) : line;
+	};
+
+	std::string line;
+	while (std::getline(std::cin, line)) {
+		const auto ipStr = parseIPFromTSV(line);
+		
+		if (!ipStr.empty()) {
+			try {
+				ipSet.emplace(ipStr);
+			} catch (...) {
+				std::cerr << "Invalid IP: " << ipStr << std::endl;
+			}
+		}
 	}
 	
 	for (const auto& addr : ipSet) {
@@ -19,14 +34,17 @@ int main(int, char **)
 	ip_filter::IPAddressV4 network1("1.0.0.0");
 	ip_filter::IPAddressV4 mask1("255.0.0.0");
 
-	ip_filter::IPAddressV4 network2("46.70.0.0");
-	ip_filter::IPAddressV4 mask2("255.255.0.0");
-
 	for (const auto& addr : ipSet) {
 		if(addr.isInSubnet(network1, mask1)) {
 			std::cout << addr << std::endl;
 		}
-		else if (addr.isInSubnet(network2, mask2)) {
+	}
+
+	ip_filter::IPAddressV4 network2("46.70.0.0");
+	ip_filter::IPAddressV4 mask2("255.255.0.0");
+
+	for (const auto& addr : ipSet) {
+		if (addr.isInSubnet(network2, mask2)) {
 			std::cout << addr << std::endl;
 		}
 	}
