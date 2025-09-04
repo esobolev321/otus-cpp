@@ -7,7 +7,7 @@
 
 int main(int, char **)
 {
-	std::set<ip_filter::IPAddressV4, std::greater<ip_filter::IPAddressV4>> ipSet;
+	std::multiset<ip_filter::IPAddressV4, std::greater<ip_filter::IPAddressV4>> ipSet;
 
 	auto parseIPFromTSV = [](const std::string& line) -> std::string {
 		auto tabPos = line.find('\t');
