@@ -24,9 +24,13 @@ setup_conan(${CONAN_PROFILE} ${CONAN_PROFILE})
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 
-set(PROJECT_NAME "helloworld")
+set(PROJECT_NAME "allocator")
 
 project(${PROJECT_NAME} VERSION ${PROJECT_VERSION})
+
+# Установка стандарта C++17
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 file(WRITE "${CMAKE_BINARY_DIR}/project_info.env" 
      "PROJECT_NAME=${CMAKE_PROJECT_NAME}\n"
@@ -47,7 +51,7 @@ add_executable(${PROJECT_NAME}_cli main.cpp)
 add_library(${PROJECT_NAME} ${LIB_SOURCES} ${LIB_HEADERS})
 
 set_target_properties(${PROJECT_NAME}_cli ${PROJECT_NAME} PROPERTIES
-    CXX_STANDARD 14
+    CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
 )
 
