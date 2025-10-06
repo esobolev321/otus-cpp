@@ -16,20 +16,17 @@ struct MyAllocatorControl {
 
     ~MyAllocatorControl() { ::operator delete(base); }
 
-    static constexpr std::size_t callculateAlign(std::size_t x, std::size_t a) noexcept {
-        return (x + (a - 1)) & ~(a - 1);
-    }
-
     template<class T>
     T* allocate(std::size_t n) {
         const std::size_t need = n * sizeof(T);
-        const std::size_t aligned = callculateAlign(used, alignof(T));
-        if (aligned > capacity || capacity - aligned < need)
+        void* p = static_cast<void*>(base + used);
+        auto space = capacity - used;
+        void* aligned = std::align(alignof(T), need, p, space);
+        if (!aligned) {
             throw std::bad_alloc();
-
-        T* ptr = reinterpret_cast<T*>(base + aligned);
-        used = aligned + need;
-        return ptr;
+        }
+        used = static_cast<std::size_t>(static_cast<char*>(aligned) - base) + need;
+        return static_cast<T*>(aligned);
     }
 };
 

@@ -4,6 +4,7 @@
 #include <my_vector.h>
 #include <vector>
 #include <string>
+#include <cstdint>
 #include <stdexcept>
 
 // Test class for version function
@@ -135,6 +136,30 @@ TEST_F(MyAllocatorTest, AlignmentTest) {
     // Check alignment
     EXPECT_EQ(reinterpret_cast<std::uintptr_t>(int_ptr) % alignof(int), 0);
     EXPECT_EQ(reinterpret_cast<std::uintptr_t>(double_ptr) % alignof(double), 0);
+}
+
+TEST_F(MyAllocatorTest, CrossTypeAlignmentWithRebind) {
+    // Use the same control block across different types
+    MyAllocator<char, 128> a_char;                // capacity in elements of char
+    MyAllocator<int, 128> a_int(a_char);          // shares ctrl
+    MyAllocator<double, 128> a_double(a_char);    // shares ctrl
+
+    // Allocate a few bytes first to force a misaligned "used" offset
+    char* c1 = a_char.allocate(1);
+    ASSERT_NE(c1, nullptr);
+
+    // Now allocate an int and a double; both must be properly aligned
+    int* ip = a_int.allocate(1);
+    ASSERT_NE(ip, nullptr);
+    EXPECT_EQ(reinterpret_cast<std::uintptr_t>(ip) % alignof(int), 0u);
+
+    // Allocate another single byte to disturb alignment again
+    char* c2 = a_char.allocate(1);
+    ASSERT_NE(c2, nullptr);
+
+    double* dp = a_double.allocate(1);
+    ASSERT_NE(dp, nullptr);
+    EXPECT_EQ(reinterpret_cast<std::uintptr_t>(dp) % alignof(double), 0u);
 }
 
 // ===============================================
