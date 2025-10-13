@@ -169,11 +169,10 @@ struct is_homogeneous_tuple<std::tuple<Ts...>> : are_same<Ts...> {};
  * 
  * @tparam I Текущий индекс (равен количеству элементов)
  * @tparam Ts Типы элементов кортежа
- * @param t Кортеж (не используется в этой версии)
  */
 template<std::size_t I = 0, typename... Ts>
 typename std::enable_if<(I == sizeof...(Ts))>::type
-print_tuple_impl(const std::tuple<Ts...>& t)
+print_tuple_impl(const std::tuple<Ts...>&)
 {
 }
 
