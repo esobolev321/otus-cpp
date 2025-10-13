@@ -162,6 +162,22 @@ template<typename... Ts>
 struct is_homogeneous_tuple<std::tuple<Ts...>> : are_same<Ts...> {};
 
 /**
+ * @brief Вспомогательная функция для завершения рекурсии печати кортежа
+ * 
+ * Активная версия для I == sizeof...(Ts) - завершает печать (базовый случай).
+ * Эта функция должна быть определена ПЕРЕД рекурсивной версией.
+ * 
+ * @tparam I Текущий индекс (равен количеству элементов)
+ * @tparam Ts Типы элементов кортежа
+ * @param t Кортеж (не используется в этой версии)
+ */
+template<std::size_t I = 0, typename... Ts>
+typename std::enable_if<(I == sizeof...(Ts))>::type
+print_tuple_impl(const std::tuple<Ts...>& t)
+{
+}
+
+/**
  * @brief Вспомогательная функция для рекурсивной печати элементов кортежа
  * 
  * Активная версия для I < sizeof...(Ts) - продолжает печать.
@@ -179,21 +195,6 @@ print_tuple_impl(const std::tuple<Ts...>& t)
     }
     std::cout << std::get<I>(t);
     print_tuple_impl<I + 1>(t);
-}
-
-/**
- * @brief Вспомогательная функция для завершения рекурсии печати кортежа
- * 
- * Активная версия для I == sizeof...(Ts) - завершает печать.
- * 
- * @tparam I Текущий индекс (равен количеству элементов)
- * @tparam Ts Типы элементов кортежа
- * @param t Кортеж (не используется в этой версии)
- */
-template<std::size_t I = 0, typename... Ts>
-typename std::enable_if<(I == sizeof...(Ts))>::type
-print_tuple_impl(const std::tuple<Ts...>& t)
-{
 }
 
 /**
