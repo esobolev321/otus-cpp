@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,63,117,88"/>
+<area shape="rect" id="Node000001" href="$structare__same_3_01T_01_4.html" title="Специализация для одного типа (всегда true)" alt="" coords="175,5,299,31"/>
+<area shape="poly" id="edge5_Node000000_Node000001" title=" " alt="" coords="113,56,197,28,198,33,115,61"/>
+<area shape="rect" id="Node000002" href="$structis__container_3_01std_1_1list_3_01T_00_01A_01_4_01_4.html" title="Специализация trait для std::list." alt="" coords="165,55,309,95"/>
+<area shape="poly" id="edge6_Node000000_Node000002" title=" " alt="" coords="131,73,165,73,165,78,131,78"/>
+<area shape="rect" id="Node000003" href="$structis__container_3_01std_1_1vector_3_01T_00_01A_01_4_01_4.html" title="Специализация trait для std::vector." alt="" coords="165,119,309,159"/>
+<area shape="poly" id="edge7_Node000000_Node000003" title=" " alt="" coords="111,90,183,117,181,122,110,95"/>
+</map>
